@@ -1,0 +1,10 @@
+{
+  "name": "wordle-solver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "danieldeng2",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
