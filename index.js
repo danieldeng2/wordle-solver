@@ -31,12 +31,12 @@ function informationGain(word, dictionary) {
 }
 
 function highestGainWord(dictionary) {
-    let highestGain = 0;
+    let highestGain = -1;
     let highestGainWord = "";
 
     for (let dictWord of dictionary) {
         let gain = informationGain(dictWord, dictionary);
-        if (gain >= highestGain) {
+        if (gain > highestGain) {
             highestGain = gain;
             highestGainWord = dictWord;
         }
@@ -85,32 +85,38 @@ function compare(guess, solution) {
     return evaluation.join("");
 }
 
+function testWord(solution) {
+    let i = 0;
+    let guess = null;
+    let currDictionary = dictionary;
+
+    const guesses = [];
+    const evaluations = [];
+
+    while (guess !== solution){
+        if (guess !== null){
+            const evaluation = compare(guess, solution);
+            evaluations.push(evaluation);
+            currDictionary = filterDictionary(currDictionary, guesses, evaluations);
+        }
+        guess = highestGainWord(currDictionary);
+        console.log(guess);
+        guesses.push(guess);
+        i++;
+    }
+
+    return i;
+}
+
 function testAverage() {
     let totalTries = 0;
     let totalWords = 0;
 
     for (let solution of dictionary) {
-        let i = 0;
-        let guess = null;
-        let currDictionary = dictionary;
-
-        const guesses = [];
-        const evaluations = [];
-        
-        while (guess !== solution){
-            if (guess !== null){
-                const evaluation = compare(guess, solution);
-                evaluations.push(evaluation);
-                currDictionary = filterDictionary(currDictionary, guesses, evaluations);
-            }
-            guess = highestGainWord(currDictionary);
-            guesses.push(guess);
-            i++;
-        }
-
-        totalTries += i;
+        let tries = testWord(solution);
+        totalTries += tries;
         totalWords++;
-        console.log(`${solution} => ${i} tries Average: ${totalTries / totalWords}`);
+        console.log(`${solution} => ${tries} tries Average: ${totalTries / totalWords}`);
     }
 
     console.log(`Average tries: ${totalTries / totalWords}`);
@@ -118,7 +124,7 @@ function testAverage() {
 }
 
 
-function solve() {    
+function solve() {
     function sendWord(word) {
         for (let c of word) {
             window.dispatchEvent(new KeyboardEvent('keydown',{
@@ -168,4 +174,3 @@ function solve() {
     }
     nextWord();
 }
-
