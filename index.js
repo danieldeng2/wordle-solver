@@ -45,106 +45,127 @@ function highestGainWord(dictionary) {
     return highestGainWord;
 }
 
-console.clear();
-
 // result:
 // G => Correct letter, correct place
 // Y => Correct letter, wrong place
-// B => Incorrect
-let invalidGuess = {};
-const alphabet = "abcdefghijklmnopqrstuvwxyz";
-for (let i = 0; i < alphabet.length; i++) {
-    invalidGuess[alphabet[i]] = {};
-}
-
-function filterDictionary(guess, result) {
-    const outOfPlace = new Set();
-
-    for (let i = 0; i < 5; i++) {
-        const c = guess[i];
-        if (result[i] === "Y") {
-            outOfPlace.add(guess[i]);
-            invalidGuess[c][i] = true;
-        } else if (result[i] === "B") {
-            if (guess.split(c).length > 2)
-                invalidGuess[c][i] = true;
-            else
-                for (let j = 0; j < 5; j++)
-                    invalidGuess[c][j] = true;
+// B => Incorrect letter, wrong place
+function filterDictionary(dictionary, guesses, evaluations) {
+    return dictionary.filter(word => {
+        for (let i = 0; i < guesses.length; i++) {
+            if (compare(guesses[i], word) !== evaluations[i]) return false;
         }
-    }
-
-    dictionary = dictionary.filter((word)=>{
-        for (let i = 0; i < 5; i++) {
-            if (result[i] === "G" && guess[i] !== word[i])
-                return false;
-            if (invalidGuess[word[i]][i])
-                return false;
-        }
-        for (let outOfPlaceLetter of outOfPlace)
-            if (!word.includes(outOfPlaceLetter))
-                return false;
         return true;
-    }
-    );
+    });
 }
 
-function compare(guess, actual) {
-    // returns a string of 5 characters
-    let result = "";
-    for (let i = 0; i < 5; i++) {
-        if (guess[i] === actual[i])
-            result += "G";
-        else if (actual.includes(guess[i]))
-            result += "Y";
-        else
-            result += "B";
+// reverse engineered from source code
+function compare(guess, solution) {
+    let evaluation = Array(solution.length).fill("B");
+    let needLetter = Array(solution.length).fill(true);
+    let hasLetter = Array(solution.length).fill(true);
+
+    for (let i = 0; i < guess.length; i++) {
+        if (guess[i] === solution[i]) {
+            evaluation[i] = "G";
+            needLetter[i] = false;
+            hasLetter[i] = false;
+        }
     }
-    return result;
+
+    for (let i = 0; i < guess.length; i++) {
+        if (needLetter[i])
+        for (let j = 0; j < solution.length; j++) {
+            if (hasLetter[j] && guess[i] === solution[j]) {
+                evaluation[i] = "Y";
+                hasLetter[j] = false;
+                break;
+            }
+        }
+    }
+    return evaluation.join("");
 }
 
-function sendWord(word) {
-    for (let c of word) {
+function testAverage() {
+    let totalTries = 0;
+    let totalWords = 0;
+
+    for (let solution of dictionary) {
+        let i = 0;
+        let guess = null;
+        let currDictionary = dictionary;
+
+        const guesses = [];
+        const evaluations = [];
+        
+        while (guess !== solution){
+            if (guess !== null){
+                const evaluation = compare(guess, solution);
+                evaluations.push(evaluation);
+                currDictionary = filterDictionary(currDictionary, guesses, evaluations);
+            }
+            guess = highestGainWord(currDictionary);
+            guesses.push(guess);
+            i++;
+        }
+
+        totalTries += i;
+        totalWords++;
+        console.log(`${solution} => ${i} tries Average: ${totalTries / totalWords}`);
+    }
+
+    console.log(`Average tries: ${totalTries / totalWords}`);
+    return totalTries / totalWords;
+}
+
+
+function solve() {    
+    function sendWord(word) {
+        for (let c of word) {
+            window.dispatchEvent(new KeyboardEvent('keydown',{
+                'key': c,
+                'bubble': true
+            }));
+        }
         window.dispatchEvent(new KeyboardEvent('keydown',{
-            'key': c,
+            'key': 'Enter',
             'bubble': true
         }));
     }
-    window.dispatchEvent(new KeyboardEvent('keydown',{
-        'key': 'Enter',
-        'bubble': true
-    }));
-}
-
-function getEvaluation(i) {
-    const evaluations = JSON.parse(localStorage.gameState).evaluations[i];
-    return evaluations.map(str=>{
-        if (str === "absent")
-            return "B";
-        if (str === "present")
-            return "Y";
-        if (str === "correct")
-            return "G";
+    
+    function getEvaluation(i) {
+        const evaluations = JSON.parse(localStorage.gameState).evaluations[i];
+        return evaluations.map(str=>{
+            if (str === "absent")
+                return "B";
+            if (str === "present")
+                return "Y";
+            if (str === "correct")
+                return "G";
+        }
+        ).join("");
     }
-    ).join("");
-}
 
-function solve() {    
     let i = 0;
     let guess = null;
+    let currDictionary = dictionary;
+
+    const guesses = [];
+    const evaluations = [];
 
     function nextWord() {
         if (guess !== null){
             const evaluation = getEvaluation(i - 1);
             if (evaluation === "GGGGG") return;
-            filterDictionary(guess, evaluation);
+
+            evaluations.push(evaluation);
+            currDictionary = filterDictionary(currDictionary, guesses, evaluations);
         }
-        guess = highestGainWord(dictionary);
+        guess = highestGainWord(currDictionary);
         sendWord(guess);
+        guesses.push(guess);
         i++;
         setTimeout(nextWord, 2000);
     }
     nextWord();
 }
-
 
