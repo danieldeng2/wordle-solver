@@ -177,4 +177,4 @@ function solve() {
 
 // console.log(testWord("boxer"));
 // testPerformance();
-// solve();
+solve();
