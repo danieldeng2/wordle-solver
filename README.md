@@ -2,6 +2,8 @@
 
 This simple script solves the wordle game by filtering the dictionary and picking the word that maximises the information gained from each word guess. 
 
+The solver should be mathematically optimal, and guarentees to solve the game in 6 words. 
+
 ## Usage
 
 1. Open chrome dev tools (Ctrl + Shift + I) and paste `index.js` into [chrome Content snippets](https://developer.chrome.com/docs/devtools/javascript/snippets/#openmouse).
