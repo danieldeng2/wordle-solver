@@ -2,7 +2,7 @@
 
 This simple script solves [the wordle game](https://www.powerlanguage.co.uk/wordle/) by filtering the dictionary and picking the word that maximises the information gained from each word guess. 
 
-The solver is mathematically optimal (averaging 3.46 words per solve), and guarentees to solve the game within 6 words. 
+The solver is optimal for shallow search (averaging 3.46 words per solve), and guarentees to solve the game within 6 words. 
 
 ## Usage
 

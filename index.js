@@ -92,11 +92,10 @@ function testWord(solution) {
             currDictionary = filterDictionary(currDictionary, guesses, evaluations);
         }
         guess = highestGainWord(currDictionary);
-        // console.log(guess);
         guesses.push(guess);
         i++;
     }
-
+    console.log(guesses.join(","));
     return i;
 }
 
