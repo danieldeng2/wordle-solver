@@ -16,6 +16,6 @@ For each round, the solver filters out all the possible moves that can result in
 
 When using the results dictionary exclusively, the best starting word is `RAISE`. The solver averages 3.600 words per solve, with the maximum being 8 words for `BOXER`.
 
-When using the extended dictionary, **the best starting word is `SOARE`.** The solver averages 3.464 words per solve, with the maximum being 6 words for `WAFER`.
+When using the extended dictionary, the best starting word is according to the algorithm is `SOARE`. The solver averages 3.464 words per solve, with the maximum being 6 words for `WAFER`.
 
-The starting word is cached in the program, making execution extremely fast (faster than the animation takes on the website). 
+To improve runtime and the number of average guesses, the best result from a deep search `SALET` is used as the starting word (reducing the average down to 3.4328). This behaviour can be disabled by passing `useCache=false` to `highestGainWord()`. 

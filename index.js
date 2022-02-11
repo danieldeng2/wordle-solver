@@ -26,7 +26,7 @@ function entropy(word, dictionary) {
 function highestGainWord(dictionary, useCache=true) {
     // cached result to improve performance
     if (useCache && dictionary.length === 2315)
-        return "soare";
+        return "salet";
 
     let highestGain = -1;
     let highestGainWord = "";
