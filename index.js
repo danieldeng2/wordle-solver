@@ -143,7 +143,7 @@ async function solve() {
     }
 
     function getEvaluation(i) {
-        const evaluations = JSON.parse(localStorage.gameState).evaluations[i];
+        const evaluations = JSON.parse(localStorage["nyt-wordle-state"]).evaluations[i];
         return evaluations.map(str=>{
             if (str === "absent")
                 return "B";
